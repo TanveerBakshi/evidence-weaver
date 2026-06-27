@@ -164,7 +164,7 @@ function BoardPage() {
   return (
     <div className="min-h-screen">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-white/10">
+      <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-black/10">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <Link to="/" data-hover className="font-display text-xl tracking-tight hover:text-[#a3a3a3]">
