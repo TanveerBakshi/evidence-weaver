@@ -116,6 +116,8 @@ export const EVIDENCE_DATA: EvidenceData = {
           passage: "Delivery date to be agreed in writing.",
           location: "clause 5.2",
           confidence: "HIGH",
+          // TODO: replace with the real Google Drive share URL or backend endpoint for this exhibit
+          pdf_url: "https://www.africau.edu/images/default/sample.pdf",
         },
       ],
     },
