@@ -130,7 +130,7 @@ function BoardPage() {
   const noteSlots = useMemo(() => {
     const cols = boardSize.w > 1600 ? 5 : boardSize.w > 1200 ? 4 : 3;
     const colW = Math.max(boardSize.w, 1200) / cols;
-    const startY = 460;
+    const startY = 720;
     return visibleRows.map(({ row, idx }, i) => {
       const col = i % cols;
       const rowI = Math.floor(i / cols);
