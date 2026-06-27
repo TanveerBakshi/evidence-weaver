@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { analyze, fetchDocuments } from "../lib/api";
 import { analysisStore } from "../lib/analysis-store";
+import { demoAnalysis } from "../lib/demo-analysis";
 import { Magnetic } from "../components/Magnetic";
 import { Reveal } from "../components/Reveal";
 
