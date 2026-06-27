@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
+import { useRouterState } from "@tanstack/react-router";
 import gavelUrl from "../assets/magnifier-cursor.png";
 import pointerUrl from "../assets/pointer-cursor.png";
 
 export function Cursor() {
   const gavel = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0, rx: 0, ry: 0, rot: 0, tRot: 0 });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isEvidenceMatrix = pathname.startsWith("/evidence-matrix");
 
   useEffect(() => {
     let lastX = 0;
@@ -63,8 +66,22 @@ export function Cursor() {
       <div
         ref={gavel}
         className="cursor-gavel"
-        style={{ backgroundImage: `url(${gavelUrl})` }}
-      />
+        style={
+          isEvidenceMatrix
+            ? {
+                backgroundImage: "none",
+                fontSize: "44px",
+                lineHeight: "1",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                filter: "drop-shadow(0 4px 6px rgba(0,0,0,.35))",
+              }
+            : { backgroundImage: `url(${gavelUrl})` }
+        }
+      >
+        {isEvidenceMatrix ? "🤔" : null}
+      </div>
       <div
         id="cursor-pointer"
         className="cursor-pointer-img"
