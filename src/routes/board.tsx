@@ -197,17 +197,17 @@ function BoardPage() {
         {/* Filters */}
         <div className="mx-auto max-w-7xl px-6 pb-3 flex items-center gap-2 text-xs font-type uppercase tracking-[0.2em]">
           {([
-            ["all", "All", "#ffffff"],
+            ["all", "All", "#000000"],
             ["contradicting", `Contradictions (${result.contradictions_count})`, "#525252"],
-            ["gap", `Gaps (${result.gaps_count})`, "#a3a3a3"],
-            ["supporting", "Supported", "#e5e5e5"],
+            ["gap", `Gaps (${result.gaps_count})`, "#737373"],
+            ["supporting", "Supported", "#262626"],
           ] as const).map(([k, label, color]) => (
             <button
               key={k}
               data-hover
               onClick={() => setFilter(k)}
               className={`rounded-full border px-3 py-1 transition ${
-                filter === k ? "bg-white text-black border-white" : "border-white/15 text-muted-foreground hover:text-white"
+                filter === k ? "bg-black text-white border-black" : "border-black/15 text-muted-foreground hover:text-black"
               }`}
               style={filter === k ? {} : { color }}
             >
