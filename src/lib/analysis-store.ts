@@ -51,12 +51,15 @@ export type AnalysisResult = {
 };
 
 let current: AnalysisResult | null = null;
+let currentJobId: string | null = null;
 const listeners = new Set<() => void>();
 
 export const analysisStore = {
   get: () => current,
-  set: (r: AnalysisResult | null) => {
+  getJobId: () => currentJobId,
+  set: (r: AnalysisResult | null, jobId?: string) => {
     current = r;
+    if (jobId) currentJobId = jobId;
     listeners.forEach((l) => l());
   },
   subscribe: (l: () => void) => {

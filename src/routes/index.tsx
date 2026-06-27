@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { analyze, fetchDocuments } from "../lib/api";
+import { submitAnalysis, pollJob, fetchDocuments, fetchDemo } from "../lib/api";
 import { analysisStore } from "../lib/analysis-store";
 import { demoAnalysis } from "../lib/demo-analysis";
 import { Magnetic } from "../components/Magnetic";
 import { Reveal } from "../components/Reveal";
+import { transformPleadingResult } from "../lib/transform";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,11 +22,6 @@ export const Route = createFileRoute("/")({
   component: UploadPage,
 });
 
-function extractName(filename: string): string {
-  const m = filename.match(/WITN\d+\s*-\s*([^-]+?)\s*-/i);
-  if (m) return m[1].trim();
-  return filename.replace(/\.pdf$/i, "");
-}
 
 function HeroScroller() {
   const ref = useRef<HTMLDivElement>(null);
@@ -102,7 +98,7 @@ function Marquee() {
 
 function UploadPage() {
   const navigate = useNavigate();
-  const [docs, setDocs] = useState<string[] | null>(null);
+  const [docs, setDocs] = useState<{ filename: string; witness_name: string }[] | null>(null);
   const [docError, setDocError] = useState<string | null>(null);
   const [primary, setPrimary] = useState<string>("");
   const [comparisons, setComparisons] = useState<string[]>([]);
@@ -130,7 +126,7 @@ function UploadPage() {
   }, [loading]);
 
   const filteredDocs = useMemo(
-    () => (docs ?? []).filter((d) => d !== primary),
+    () => (docs ?? []).filter((d) => d.filename !== primary),
     [docs, primary],
   );
 
@@ -149,9 +145,30 @@ function UploadPage() {
     setError(null);
     setLoading(true);
     try {
-      const result = await analyze(primary, comparisons);
-      analysisStore.set(result);
-      navigate({ to: "/board" });
+      // Submit job — returns instantly
+      const { job_id } = await submitAnalysis(primary, comparisons);
+
+      // Poll until complete
+      const poll = async (): Promise<void> => {
+        const job = await pollJob(job_id);
+
+        if (job.status === "complete" && job.result) {
+          const transformed = transformPleadingResult(job.result);
+          analysisStore.set(transformed, job_id);
+          navigate({ to: "/board" });
+          return;
+        }
+
+        if (job.status === "failed") {
+          throw new Error(job.error || "Analysis failed");
+        }
+
+        // Still running — poll again in 5s
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return poll();
+      };
+
+      await poll();
     } catch (e) {
       setError(
         e instanceof TypeError
@@ -235,8 +252,8 @@ function UploadPage() {
               >
                 <option value="">Select a primary witness…</option>
                 {(docs ?? []).map((d) => (
-                  <option key={d} value={d}>
-                    {extractName(d)}
+                  <option key={d.filename} value={d.filename}>
+                    {d.witness_name}
                   </option>
                 ))}
               </select>
@@ -261,11 +278,11 @@ function UploadPage() {
                   </div>
                 )}
                 {filteredDocs.map((d) => {
-                  const checked = comparisons.includes(d);
+                  const checked = comparisons.includes(d.filename);
                   const disabled = !checked && comparisons.length >= 4;
                   return (
                     <label
-                      key={d}
+                      key={d.filename}
                       data-hover
                       className={`flex items-center gap-3 px-3 py-2 text-sm hover:bg-black/5 font-type transition ${
                         disabled ? "opacity-40" : ""
@@ -276,9 +293,9 @@ function UploadPage() {
                         className="accent-[#e5e5e5]"
                         checked={checked}
                         disabled={disabled}
-                        onChange={() => toggleComparison(d)}
+                        onChange={() => toggleComparison(d.filename)}
                       />
-                      <span className="truncate">{extractName(d)}</span>
+                      <span className="truncate">{d.witness_name}</span>
                     </label>
                   );
                 })}
@@ -311,9 +328,15 @@ function UploadPage() {
             )}
             <Magnetic>
               <button
-                onClick={() => {
-                  analysisStore.set(demoAnalysis);
-                  navigate({ to: "/board" });
+                onClick={async () => {
+                  try {
+                    const result = await fetchDemo();
+                    analysisStore.set(result, "demo");
+                    navigate({ to: "/board" });
+                  } catch {
+                    analysisStore.set(demoAnalysis, "demo");
+                    navigate({ to: "/board" });
+                  }
                 }}
                 data-hover
                 className="rounded-full border border-black/20 px-5 py-3 text-sm font-type uppercase tracking-[0.2em] hover:bg-black/5"
