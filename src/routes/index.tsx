@@ -215,7 +215,7 @@ function UploadPage() {
           <Reveal>
             <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#a3a3a3]/40">
               <div className="flex items-baseline justify-between">
-                <h3 className="font-marker text-2xl text-[#a3a3a3]">Primary witness</h3>
+                <h3 className="font-display text-2xl tracking-tight text-foreground">Primary witness</h3>
                 <span className="text-xs text-muted-foreground font-type">
                   {docs ? `${docs.length} available` : "Loading…"}
                 </span>
