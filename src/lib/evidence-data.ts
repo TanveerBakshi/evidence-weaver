@@ -16,6 +16,8 @@ export type DocEvidence = {
   passage: string;
   location: string;
   confidence: Confidence;
+  /** PDF URL — Google Drive share link, backend endpoint, etc. */
+  pdf_url?: string;
 };
 
 export type Claim = {
