@@ -17,10 +17,10 @@ export function Cursor() {
       lastT = now;
       pos.current.x = e.clientX;
       pos.current.y = e.clientY;
-      pos.current.tRot = -20 + Math.max(-25, Math.min(25, vx * 8));
+      pos.current.tRot = Math.max(-12, Math.min(12, vx * 4));
     };
-    const onDown = () => { pos.current.tRot = 35; };
-    const onUp = () => { pos.current.tRot = -20; };
+    const onDown = () => { pos.current.tRot = -18; };
+    const onUp = () => { pos.current.tRot = 0; };
     const onOver = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
       if (t.closest("a, button, [data-hover], input, select, textarea, label")) {
