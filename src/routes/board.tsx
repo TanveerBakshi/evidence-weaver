@@ -348,9 +348,9 @@ function BoardPage() {
           {/* Legend */}
           <div className="absolute right-6 top-6 paper px-4 py-3 rotate-[2deg] font-type text-xs">
             <div className="font-marker text-base mb-2">LEGEND</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-green" /> Supported by other witnesses</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> Evidential gap — no corroboration</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> Contradicted by other witnesses</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block border border-black/20" style={{ background: "#16a34a" }} /> Supported by other witnesses</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block border border-black/20" style={{ background: "#eab308" }} /> Evidential gap — no corroboration</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block border border-black/20" style={{ background: "#dc2626" }} /> Contradicted by other witnesses</div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/10">
               <span className="pushpin inline-block relative" style={{ position: "relative", top: 0 }} /> White pin = primary · amber = comparison
             </div>
