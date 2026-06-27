@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { analyze, fetchDocuments } from "../lib/api";
 import { analysisStore } from "../lib/analysis-store";
+import { demoAnalysis } from "../lib/demo-analysis";
 import { Magnetic } from "../components/Magnetic";
 import { Reveal } from "../components/Reveal";
 
@@ -308,6 +309,18 @@ function UploadPage() {
                 </Link>
               </Magnetic>
             )}
+            <Magnetic>
+              <button
+                onClick={() => {
+                  analysisStore.set(demoAnalysis);
+                  navigate({ to: "/board" });
+                }}
+                data-hover
+                className="rounded-full border border-black/20 px-5 py-3 text-sm font-type uppercase tracking-[0.2em] hover:bg-black/5"
+              >
+                Try demo board
+              </button>
+            </Magnetic>
             <Magnetic strength={0.5}>
               <button
                 onClick={onAnalyse}
