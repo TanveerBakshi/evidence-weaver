@@ -339,13 +339,17 @@ function BoardPage() {
           {/* Legend */}
           <div className="absolute right-6 top-6 paper px-4 py-3 rotate-[2deg] font-type text-xs">
             <div className="font-marker text-base mb-2">LEGEND</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-green" /> supported</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> evidential gap</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> contradicted</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-green" /> Supported by other witnesses</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> Evidential gap — no corroboration</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> Contradicted by other witnesses</div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/10">
-              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> red string = contradiction
+              <span className="pushpin inline-block relative" style={{ position: "relative", top: 0 }} /> White pin = primary · amber = comparison
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> String links a claim to a contradicting witness
             </div>
           </div>
+
         </div>
       </div>
 
