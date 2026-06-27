@@ -1,12 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  Users,
-  AlertTriangle,
-  Scale,
-  FileSearch,
-  ArrowUpRight,
-} from "lucide-react";
+import { Users, AlertTriangle, Scale } from "lucide-react";
+import { useAnalysis, type SupportingEvidence, type ContradictingEvidence } from "../lib/analysis-store";
 
 export const Route = createFileRoute("/evidence-matrix")({
   head: () => ({
@@ -22,14 +17,18 @@ export const Route = createFileRoute("/evidence-matrix")({
   component: EvidenceMatrixPage,
 });
 
-import {
-  EVIDENCE_DATA as DATA,
-  deriveGaps,
-  deriveContradictions,
-  type Claim,
-  type Confidence,
-  type WitnessEvidence,
-} from "../lib/evidence-data";
+type ClaimItem = {
+  id: string;
+  allegation_id: number;
+  allegation: string;
+  topic: string;
+  paragraph: string;
+  supporting: SupportingEvidence[];
+  contradicting: ContradictingEvidence[];
+  gap: boolean;
+  confidence: string;
+  not_addressed: string[];
+};
 
 function readinessTone(r: string) {
   if (r === "STRONG")
@@ -39,33 +38,61 @@ function readinessTone(r: string) {
   return { bg: "bg-rose-50", text: "text-rose-700", ring: "ring-rose-600/30", dot: "bg-rose-600" };
 }
 
-function confTone(c: Confidence) {
+function confTone(c: string) {
   if (c === "HIGH") return "bg-slate-900 text-white";
   if (c === "MEDIUM") return "bg-slate-300 text-slate-900";
   return "bg-slate-100 text-slate-600 ring-1 ring-slate-200";
 }
 
-function rankClaim(c: Claim) {
+function rankClaim(c: ClaimItem) {
   const witnesses = c.supporting.length + c.contradicting.length;
   return witnesses * 10 + (c.gap ? -1000 : 0);
 }
 
 function EvidenceMatrixPage() {
+  const result = useAnalysis();
   const [filter, setFilter] = useState<"all" | "supported" | "contradicted" | "gaps">("all");
 
-  const gaps = useMemo(() => deriveGaps(DATA), []);
-  const contradictions = useMemo(() => deriveContradictions(DATA), []);
+  const DATA = useMemo<ClaimItem[]>(
+    () =>
+      result
+        ? result.matrix.map((row, idx) => ({
+            id: row.allegation_summary,
+            allegation_id: idx + 1,
+            allegation: row.allegation_summary,
+            topic: row.topic,
+            paragraph: row.paragraph_ref,
+            supporting: row.supporting,
+            contradicting: row.contradicting,
+            gap: row.gap,
+            confidence: row.confidence,
+            not_addressed: row.neutral,
+          }))
+        : [],
+    [result],
+  );
+
+  const gaps = useMemo(() => DATA.filter((r) => r.gap), [DATA]);
+  const contradictions = useMemo(() => DATA.filter((r) => r.contradicting.length > 0), [DATA]);
 
   const claims = useMemo(() => {
-    let rows = DATA.matrix.slice();
+    let rows = DATA.slice();
     if (filter === "supported") rows = rows.filter((r) => r.supporting.length > 0);
     if (filter === "contradicted") rows = rows.filter((r) => r.contradicting.length > 0);
     if (filter === "gaps") rows = rows.filter((r) => r.gap);
     rows.sort((a, b) => rankClaim(b) - rankClaim(a));
     return rows;
-  }, [filter]);
+  }, [DATA, filter]);
 
-  const tr = readinessTone(DATA.trial_readiness);
+  if (!result)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground font-type">No analysis loaded. Run an analysis first.</p>
+      </div>
+    );
+
+  const tr = readinessTone(result.trial_readiness);
+  const witnesses = [result.primary_witness, ...result.comparison_witnesses];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -87,7 +114,7 @@ function EvidenceMatrixPage() {
                 </h1>
               </div>
               <p className="mt-1 text-sm text-slate-500">
-                Witness statement analysis · {DATA.total_allegations} allegations
+                Witness statement analysis · {result.total_claims} allegations
               </p>
 
               <div className="mt-5">
@@ -95,7 +122,7 @@ function EvidenceMatrixPage() {
                   Documents analysed
                 </div>
                 <div className="mt-1 flex flex-wrap gap-1.5">
-                  {DATA.documents_analysed.map((w) => (
+                  {witnesses.map((w) => (
                     <span
                       key={w}
                       className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700"
@@ -116,7 +143,7 @@ function EvidenceMatrixPage() {
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
                   <div className="text-4xl font-semibold tabular-nums text-slate-900">
-                    {DATA.trial_readiness_score.toFixed(1)}
+                    {result.trial_readiness_score.toFixed(1)}
                   </div>
                   <div className="text-sm text-slate-400">/ 100</div>
                 </div>
@@ -124,7 +151,7 @@ function EvidenceMatrixPage() {
                   className={`mt-3 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold ring-1 ${tr.bg} ${tr.text} ${tr.ring}`}
                 >
                   <span className={`h-1.5 w-1.5 rounded-full ${tr.dot}`} />
-                  {DATA.trial_readiness}
+                  {result.trial_readiness}
                 </div>
               </div>
 
@@ -184,7 +211,7 @@ function EvidenceMatrixPage() {
         {/* Claims */}
         <div className="space-y-5">
           {claims.map((c) => (
-            <ClaimCard key={c.allegation_id} claim={c} />
+            <ClaimCard key={c.id} claim={c} />
           ))}
           {claims.length === 0 && (
             <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
@@ -218,7 +245,7 @@ function EvidenceMatrixPage() {
   );
 }
 
-function ClaimCard({ claim }: { claim: Claim }) {
+function ClaimCard({ claim }: { claim: ClaimItem }) {
   const notAddressedCount = claim.not_addressed.length;
 
   return (
@@ -233,7 +260,6 @@ function ClaimCard({ claim }: { claim: Claim }) {
           : "border-slate-200"
       }`}
     >
-      {/* Claim header */}
       <div className="border-b border-slate-100 px-5 py-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
@@ -267,24 +293,19 @@ function ClaimCard({ claim }: { claim: Claim }) {
         </div>
       </div>
 
-      {/* Evidence body */}
       {claim.gap && claim.supporting.length === 0 && claim.contradicting.length === 0 ? (
         <div className="flex items-center gap-3 bg-slate-50 px-5 py-6 text-sm text-slate-600">
           <AlertTriangle className="h-5 w-5 text-slate-500" />
           <div>
-            <div className="font-semibold text-slate-800">
-              No corroborating evidence found.
-            </div>
+            <div className="font-semibold text-slate-800">No corroborating evidence found.</div>
             <div className="text-xs text-slate-500">
-              Not addressed by {notAddressedCount} witness
-              {notAddressedCount === 1 ? "" : "es"}
+              Not addressed by {notAddressedCount} witness{notAddressedCount === 1 ? "" : "es"}
               {notAddressedCount > 0 && `: ${claim.not_addressed.join(", ")}`}.
             </div>
           </div>
         </div>
       ) : (
         <div className="grid gap-0 lg:grid-cols-2">
-          {/* Supporting */}
           <div className="border-b border-slate-100 lg:border-b-0 lg:border-r lg:border-slate-100 px-5 py-5">
             <div className="mb-3 flex items-center gap-2">
               <Users className="h-4 w-4 text-emerald-600" />
@@ -305,7 +326,6 @@ function ClaimCard({ claim }: { claim: Claim }) {
             )}
           </div>
 
-          {/* Contradicting */}
           <div className="px-5 py-5">
             <div className="mb-3 flex items-center gap-2">
               <Users className="h-4 w-4 text-rose-600" />
@@ -330,8 +350,8 @@ function ClaimCard({ claim }: { claim: Claim }) {
 
       {notAddressedCount > 0 && (
         <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-2.5 text-[11px] text-slate-500">
-          Not addressed by {notAddressedCount} witness
-          {notAddressedCount === 1 ? "" : "es"}: {claim.not_addressed.join(", ")}
+          Not addressed by {notAddressedCount} witness{notAddressedCount === 1 ? "" : "es"}:{" "}
+          {claim.not_addressed.join(", ")}
         </div>
       )}
     </article>
@@ -346,7 +366,13 @@ function Chip({ children }: { children: React.ReactNode }) {
   );
 }
 
-function WitnessCard({ w, kind }: { w: WitnessEvidence; kind: "support" | "contradict" }) {
+function WitnessCard({
+  w,
+  kind,
+}: {
+  w: SupportingEvidence | ContradictingEvidence;
+  kind: "support" | "contradict";
+}) {
   const isSupport = kind === "support";
   return (
     <div
@@ -355,35 +381,19 @@ function WitnessCard({ w, kind }: { w: WitnessEvidence; kind: "support" | "contr
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-800">
-          {w.witness}
-          <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-500">
-            <FileSearch className="h-2.5 w-2.5" />
-            {w.statement_id}
-          </span>
-        </div>
-        <span className="text-[10px] text-slate-400">{w.paragraph_ref}</span>
+        <div className="text-xs font-medium text-slate-800">{w.witness}</div>
+        <span className="text-[10px] text-slate-400">{w.paragraph}</span>
       </div>
-      <p className="mt-1.5 text-xs italic text-slate-700">"{w.relevant_passage}"</p>
-      {w.reasoning && (
+      <p className="mt-1.5 text-xs italic text-slate-700">"{w.passage}"</p>
+      {"reasoning" in w && w.reasoning && (
         <p className="mt-1 text-[11px] text-slate-500">↳ {w.reasoning}</p>
       )}
-      <div className="mt-2 flex items-center justify-between gap-2">
+      <div className="mt-2">
         <span
-          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${confTone(
-            w.confidence,
-          )}`}
+          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${confTone(w.confidence)}`}
         >
           {w.confidence}
         </span>
-        <Link
-          to="/statement/$statementId"
-          params={{ statementId: w.statement_id }}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 hover:text-slate-900"
-        >
-          View statement
-          <ArrowUpRight className="h-3 w-3" />
-        </Link>
       </div>
     </div>
   );

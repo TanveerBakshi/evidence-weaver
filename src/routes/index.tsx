@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { submitAnalysis, pollJob, fetchDocuments, fetchDemo } from "../lib/api";
 import { analysisStore } from "../lib/analysis-store";
-import { demoAnalysis } from "../lib/demo-analysis";
 import { Magnetic } from "../components/Magnetic";
 import { Reveal } from "../components/Reveal";
 import { transformPleadingResult } from "../lib/transform";
@@ -329,19 +328,20 @@ function UploadPage() {
             <Magnetic>
               <button
                 onClick={async () => {
+                  setLoading(true);
                   try {
                     const result = await fetchDemo();
                     analysisStore.set(result, "demo");
                     navigate({ to: "/board" });
                   } catch {
-                    analysisStore.set(demoAnalysis, "demo");
-                    navigate({ to: "/board" });
+                    setError("Demo not available — make sure backend is running");
+                    setLoading(false);
                   }
                 }}
                 data-hover
                 className="rounded-full border border-black/20 px-5 py-3 text-sm font-type uppercase tracking-[0.2em] hover:bg-black/5"
               >
-                Try demo board
+                Load live demo →
               </button>
             </Magnetic>
             <Magnetic strength={0.5}>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAnalysis, type MatrixRow } from "../lib/analysis-store";
+import { useAnalysis, analysisStore, type MatrixRow } from "../lib/analysis-store";
 import { Magnetic } from "../components/Magnetic";
 
 export const Route = createFileRoute("/board")({
@@ -49,6 +49,7 @@ function BoardPage() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "contradicting" | "gap" | "supporting">("all");
+  const [snapshotSaved, setSnapshotSaved] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState({ w: 0, h: 0 });
 
@@ -88,11 +89,6 @@ function BoardPage() {
   }
 
   // Witnesses to pin: primary + comparisons
-  const allWitnesses = useMemo(
-    () => [result.primary_witness, ...result.comparison_witnesses],
-    [result],
-  );
-
   // Primary witness centered at top, comparisons in a row below
   const witnessSlots = useMemo(() => {
     const w = Math.max(boardSize.w, 1200);
@@ -167,6 +163,24 @@ function BoardPage() {
     return lines;
   }, [noteSlots, witnessSlots, result]);
 
+  const saveSnapshot = async () => {
+    const jobId = analysisStore.getJobId() ?? "demo";
+    try {
+      await fetch("http://127.0.0.1:8000/snapshots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: `Snapshot — ${result?.primary_witness} — ${new Date().toLocaleString()}`,
+          job_id: jobId,
+        }),
+      });
+      setSnapshotSaved(true);
+      setTimeout(() => setSnapshotSaved(false), 3000);
+    } catch (e) {
+      console.error("Snapshot failed", e);
+    }
+  };
+
   const tone = readinessTone(result.trial_readiness);
   const boardW = Math.max(boardSize.w, 1200);
   const boardH = Math.max(900, 720 + Math.ceil(noteSlots.length / (boardSize.w > 1600 ? 5 : boardSize.w > 1200 ? 4 : 3)) * 260 + 120);
@@ -202,6 +216,16 @@ function BoardPage() {
             <Link to="/report" data-hover className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-black hover:bg-black/5">
               Report
             </Link>
+            <Link to="/graph" data-hover className="font-type text-sm uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition">
+              Graph
+            </Link>
+            <button
+              onClick={saveSnapshot}
+              data-hover
+              className="font-type text-sm uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition"
+            >
+              {snapshotSaved ? "✓ Saved" : "Save Snapshot"}
+            </button>
           </div>
         </div>
         {/* Filters */}
