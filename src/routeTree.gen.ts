@@ -14,6 +14,7 @@ import { Route as MatrixRouteImport } from './routes/matrix'
 import { Route as EvidenceMatrixRouteImport } from './routes/evidence-matrix'
 import { Route as BoardRouteImport } from './routes/board'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EvidenceMatrixDocumentExhibitRouteImport } from './routes/evidence-matrix.document.$exhibit'
 
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
@@ -40,41 +41,69 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvidenceMatrixDocumentExhibitRoute =
+  EvidenceMatrixDocumentExhibitRouteImport.update({
+    id: '/document/$exhibit',
+    path: '/document/$exhibit',
+    getParentRoute: () => EvidenceMatrixRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
-  '/evidence-matrix': typeof EvidenceMatrixRoute
+  '/evidence-matrix': typeof EvidenceMatrixRouteWithChildren
   '/matrix': typeof MatrixRoute
   '/report': typeof ReportRoute
+  '/evidence-matrix/document/$exhibit': typeof EvidenceMatrixDocumentExhibitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
-  '/evidence-matrix': typeof EvidenceMatrixRoute
+  '/evidence-matrix': typeof EvidenceMatrixRouteWithChildren
   '/matrix': typeof MatrixRoute
   '/report': typeof ReportRoute
+  '/evidence-matrix/document/$exhibit': typeof EvidenceMatrixDocumentExhibitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
-  '/evidence-matrix': typeof EvidenceMatrixRoute
+  '/evidence-matrix': typeof EvidenceMatrixRouteWithChildren
   '/matrix': typeof MatrixRoute
   '/report': typeof ReportRoute
+  '/evidence-matrix/document/$exhibit': typeof EvidenceMatrixDocumentExhibitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/board' | '/evidence-matrix' | '/matrix' | '/report'
+  fullPaths:
+    | '/'
+    | '/board'
+    | '/evidence-matrix'
+    | '/matrix'
+    | '/report'
+    | '/evidence-matrix/document/$exhibit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/board' | '/evidence-matrix' | '/matrix' | '/report'
-  id: '__root__' | '/' | '/board' | '/evidence-matrix' | '/matrix' | '/report'
+  to:
+    | '/'
+    | '/board'
+    | '/evidence-matrix'
+    | '/matrix'
+    | '/report'
+    | '/evidence-matrix/document/$exhibit'
+  id:
+    | '__root__'
+    | '/'
+    | '/board'
+    | '/evidence-matrix'
+    | '/matrix'
+    | '/report'
+    | '/evidence-matrix/document/$exhibit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoardRoute: typeof BoardRoute
-  EvidenceMatrixRoute: typeof EvidenceMatrixRoute
+  EvidenceMatrixRoute: typeof EvidenceMatrixRouteWithChildren
   MatrixRoute: typeof MatrixRoute
   ReportRoute: typeof ReportRoute
 }
@@ -116,13 +145,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evidence-matrix/document/$exhibit': {
+      id: '/evidence-matrix/document/$exhibit'
+      path: '/document/$exhibit'
+      fullPath: '/evidence-matrix/document/$exhibit'
+      preLoaderRoute: typeof EvidenceMatrixDocumentExhibitRouteImport
+      parentRoute: typeof EvidenceMatrixRoute
+    }
   }
 }
+
+interface EvidenceMatrixRouteChildren {
+  EvidenceMatrixDocumentExhibitRoute: typeof EvidenceMatrixDocumentExhibitRoute
+}
+
+const EvidenceMatrixRouteChildren: EvidenceMatrixRouteChildren = {
+  EvidenceMatrixDocumentExhibitRoute: EvidenceMatrixDocumentExhibitRoute,
+}
+
+const EvidenceMatrixRouteWithChildren = EvidenceMatrixRoute._addFileChildren(
+  EvidenceMatrixRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoardRoute: BoardRoute,
-  EvidenceMatrixRoute: EvidenceMatrixRoute,
+  EvidenceMatrixRoute: EvidenceMatrixRouteWithChildren,
   MatrixRoute: MatrixRoute,
   ReportRoute: ReportRoute,
 }
