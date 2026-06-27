@@ -186,10 +186,10 @@ function BoardPage() {
             >
               {tone.word} · {(result.trial_readiness_score * 100).toFixed(0)}%
             </span>
-            <Link to="/matrix" data-hover className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-white hover:bg-white/5">
+            <Link to="/matrix" data-hover className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-black hover:bg-black/5">
               Matrix
             </Link>
-            <Link to="/report" data-hover className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-white hover:bg-white/5">
+            <Link to="/report" data-hover className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-black hover:bg-black/5">
               Report
             </Link>
           </div>
