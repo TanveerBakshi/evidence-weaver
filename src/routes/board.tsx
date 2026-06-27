@@ -263,33 +263,36 @@ function BoardPage() {
           </div>
 
           {/* Witness polaroids */}
-          {witnessSlots.map((w, i) => {
-            const isPrimary = w.name === result.primary_witness;
+          {witnessSlots.map((w) => {
+            const isPrimary = w.isPrimary;
+            const size = isPrimary ? 280 : 200;
             return (
               <div
                 key={w.name}
                 className="absolute polaroid wobble"
                 style={{
-                  left: w.x - 110,
+                  left: w.x - size / 2,
                   top: w.y,
-                  width: 220,
+                  width: size,
                   ["--rot" as any]: `${w.rot}deg`,
                   transform: `rotate(${w.rot}deg)`,
+                  zIndex: isPrimary ? 5 : 3,
                 }}
               >
                 <div className={`pushpin absolute -top-2 left-1/2 -translate-x-1/2 ${isPrimary ? "" : "amber"}`} />
                 <div
-                  className="aspect-square w-full flex items-center justify-center font-display text-6xl"
+                  className="aspect-square w-full flex items-center justify-center font-display"
                   style={{
                     background: `linear-gradient(135deg, #2a2a2a, #4a4a4a)`,
                     color: "#ddd",
                     filter: "grayscale(0.4) contrast(1.05)",
+                    fontSize: isPrimary ? "5rem" : "3.5rem",
                   }}
                 >
                   {initialsOf(w.name)}
                 </div>
                 <div className="mt-3 text-center">
-                  <div className="font-marker text-lg leading-tight">{w.name}</div>
+                  <div className={`font-marker leading-tight ${isPrimary ? "text-2xl" : "text-base"}`}>{w.name}</div>
                   <div className="font-type text-[10px] uppercase tracking-[0.2em] text-neutral-600 mt-1">
                     {isPrimary ? "Primary witness" : "Comparison"}
                   </div>
@@ -297,6 +300,7 @@ function BoardPage() {
               </div>
             );
           })}
+
 
           {/* Claim notes */}
           {noteSlots.map(({ row, idx, x, y, rot }) => {
