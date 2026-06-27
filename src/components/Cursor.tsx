@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import gavelUrl from "../assets/gavel-cursor.png";
+import gavelUrl from "../assets/magnifier-cursor.png";
 
 export function Cursor() {
   const gavel = useRef<HTMLDivElement>(null);
