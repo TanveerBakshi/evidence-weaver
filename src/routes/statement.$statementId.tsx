@@ -130,7 +130,7 @@ function StatementPage() {
             Cited on {refs.length} allegation{refs.length === 1 ? "" : "s"}
           </div>
           <div className="space-y-4">
-            {refs.map(({ claim, entry, kind }) => {
+            {refs.map(({ claim, entry, kind }: { claim: Claim; entry: WitnessEvidence; kind: "support" | "contradict" }) => {
               const isSupport = kind === "support";
               return (
                 <article
