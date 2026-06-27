@@ -5,35 +5,38 @@ import { useAnalysis, type MatrixRow } from "../lib/analysis-store";
 export const Route = createFileRoute("/matrix")({
   head: () => ({
     meta: [
-      { title: "Analysis — Witness Statement Matrix" },
+      { title: "Evidence Matrix — Pleading-to-Proof" },
       {
         name: "description",
         content:
-          "Cross-referenced evidence matrix showing supporting, contradicting, and gap claims.",
+          "Cross-referenced evidence matrix showing supporting, contradicting, and gap claims across witness statements.",
       },
     ],
   }),
   component: MatrixPage,
 });
 
-function readinessStyle(r: string): { bg: string; label: string } {
-  if (r === "STRONG") return { bg: "#22c55e", label: "STRONG" };
-  if (r === "MODERATE") return { bg: "#f59e0b", label: "MODERATE" };
-  return { bg: "#ef4444", label: "VULNERABLE" };
+function readinessClass(r: string) {
+  if (r === "STRONG") return "bg-[#e5e5e5]/15 text-[#f5f5f5] border-[#e5e5e5]/40";
+  if (r === "MODERATE") return "bg-[#a3a3a3]/15 text-[#d4d4d4] border-[#a3a3a3]/40";
+  return "bg-[#525252]/15 text-[#a3a3a3] border-[#525252]/40";
 }
 
-function rowBg(row: MatrixRow): string {
-  if (row.contradicting.length > 0) return "rgba(239,68,68,0.10)";
-  if (row.gap) return "rgba(245,158,11,0.10)";
-  if (row.supporting.length > 0) return "rgba(34,197,94,0.10)";
-  return "transparent";
+function confidencePill(c: string) {
+  const base =
+    "inline-block rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider";
+  if (c === "HIGH") return `${base} bg-black/10 text-black`;
+  if (c === "MEDIUM") return `${base} bg-black/5 text-muted-foreground`;
+  return `${base} bg-black/5 text-muted-foreground`;
 }
 
-function rowBorder(row: MatrixRow): string {
-  if (row.contradicting.length > 0) return "#ef4444";
-  if (row.gap) return "#f59e0b";
-  if (row.supporting.length > 0) return "#22c55e";
-  return "transparent";
+function rowTone(row: MatrixRow) {
+  if (row.contradicting.length > 0)
+    return "bg-[#525252]/10 hover:bg-[#525252]/15 border-l-2 border-[#525252]";
+  if (row.gap) return "bg-[#a3a3a3]/10 hover:bg-[#a3a3a3]/15 border-l-2 border-[#a3a3a3]";
+  if (row.supporting.length > 0)
+    return "bg-[#e5e5e5]/10 hover:bg-[#e5e5e5]/15 border-l-2 border-[#e5e5e5]";
+  return "hover:bg-black/5 border-l-2 border-transparent";
 }
 
 function MatrixPage() {
@@ -43,37 +46,29 @@ function MatrixPage() {
 
   if (!result) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center px-6 text-white"
-        style={{ background: "#0f1623", fontFamily: "Inter, system-ui, sans-serif" }}
-      >
+      <div className="min-h-screen flex items-center justify-center px-6">
         <div className="text-center max-w-md">
           <h1 className="text-xl font-semibold">No analysis loaded</h1>
-          <p className="mt-2 text-white/60">
-            Run an analysis from the upload page first.
+          <p className="mt-2 text-muted-foreground">
+            Run an analysis from the home page to populate the matrix.
           </p>
           <button
             onClick={() => navigate({ to: "/" })}
-            className="mt-6 rounded-md bg-white px-4 py-2 text-sm font-semibold text-[#0f1623]"
+            className="mt-6 rounded-md bg-[color:var(--color-primary)] px-4 py-2 text-sm font-medium text-[color:var(--color-primary-foreground)]"
           >
-            Go to upload
+            Start analysis
           </button>
         </div>
       </div>
     );
   }
 
-  const tr = readinessStyle(result.trial_readiness);
-
   return (
-    <div
-      className="min-h-screen text-white"
-      style={{ background: "#0f1623", fontFamily: "Inter, system-ui, sans-serif" }}
-    >
-      <header className="border-b border-white/10">
+    <div className="min-h-screen">
+      <header className="border-b border-black/10">
         <div className="mx-auto max-w-7xl px-6 py-5 flex items-center justify-between gap-4">
           <div>
-            <Link to="/" className="text-xs text-white/50 hover:text-white">
+            <Link to="/" className="text-xs text-muted-foreground hover:text-black">
               ← New analysis
             </Link>
             <h1 className="mt-1 text-xl font-semibold tracking-tight">
@@ -81,12 +76,18 @@ function MatrixPage() {
             </h1>
           </div>
           <nav className="flex items-center gap-2 text-sm">
-            <span className="rounded-md bg-white/10 px-3 py-1.5 font-medium">
-              Analysis
+            <Link
+              to="/board"
+              className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-black hover:bg-black/5"
+            >
+              Board
+            </Link>
+            <span className="rounded-md bg-black/10 px-3 py-1.5 font-medium">
+              Matrix
             </span>
             <Link
               to="/report"
-              className="rounded-md px-3 py-1.5 text-white/60 hover:text-white hover:bg-white/5"
+              className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-black hover:bg-black/5"
             >
               Report
             </Link>
@@ -95,51 +96,46 @@ function MatrixPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {/* Top summary */}
         <section className="grid gap-4 md:grid-cols-3 mb-8">
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
-            <div className="text-xs uppercase tracking-wider text-white/50">
+          <div className="rounded-lg border border-black/10 bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
               Primary witness
             </div>
             <div className="mt-2 text-2xl font-semibold">
               {result.primary_witness}
             </div>
-            <div className="mt-1 text-xs text-white/50">
+            <div className="mt-1 text-xs text-muted-foreground">
               vs {result.comparison_witnesses.join(", ")}
             </div>
           </div>
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
-            <div className="text-xs uppercase tracking-wider text-white/50">
+          <div className="rounded-lg border border-black/10 bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
               Total claims
             </div>
             <div className="mt-2 text-2xl font-semibold tabular-nums">
               {result.total_claims}
             </div>
-            <div className="mt-1 text-xs text-white/50">
+            <div className="mt-1 text-xs text-muted-foreground">
               {result.contradictions_count} contradicted · {result.gaps_count} gaps
             </div>
           </div>
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
-            <div className="text-xs uppercase tracking-wider text-white/50">
+          <div className="rounded-lg border border-black/10 bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
               Trial readiness
             </div>
-            <div className="mt-2 flex items-center gap-3">
-              <span
-                className="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-semibold text-white"
-                style={{ background: tr.bg }}
-              >
-                {tr.label}
-              </span>
-              <span className="text-sm text-white/70 tabular-nums">
-                {result.trial_readiness_score.toFixed(1)}
-              </span>
+            <div
+              className={`mt-2 inline-flex items-center rounded-md border px-3 py-1.5 text-sm font-semibold ${readinessClass(result.trial_readiness)}`}
+            >
+              {result.trial_readiness}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground tabular-nums">
+              Score {(result.trial_readiness_score * 100).toFixed(0)}%
             </div>
           </div>
         </section>
 
-        {/* Matrix table */}
-        <section className="rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden">
-          <div className="grid grid-cols-12 px-5 py-3 text-xs uppercase tracking-wider text-white/50 border-b border-white/10 bg-white/[0.04]">
+        <section className="rounded-lg border border-black/10 bg-card overflow-hidden">
+          <div className="grid grid-cols-12 px-5 py-3 text-xs uppercase tracking-wider text-muted-foreground border-b border-black/10 bg-black/5">
             <div className="col-span-5">Claim</div>
             <div className="col-span-2">Type</div>
             <div className="col-span-2">Topic</div>
@@ -148,106 +144,84 @@ function MatrixPage() {
             <div className="col-span-1 text-center">Gap</div>
           </div>
 
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-black/5">
             {result.matrix.map((row, i) => {
               const open = expanded === i;
               return (
                 <div key={i}>
                   <button
                     onClick={() => setExpanded(open ? null : i)}
-                    className="w-full text-left grid grid-cols-12 px-5 py-4 text-sm transition hover:bg-white/[0.04]"
-                    style={{
-                      background: rowBg(row),
-                      borderLeft: `3px solid ${rowBorder(row)}`,
-                    }}
+                    className={`w-full text-left grid grid-cols-12 px-5 py-4 text-sm transition ${rowTone(row)}`}
                   >
                     <div className="col-span-5 pr-4">
-                      <div className="line-clamp-2 text-white">
+                      <div className="line-clamp-2 text-black">
                         {row.allegation_summary}
                       </div>
-                      <div className="mt-1 text-[11px] text-white/40">
+                      <div className="mt-1 text-[11px] text-muted-foreground">
                         {row.paragraph_ref}
                       </div>
                     </div>
-                    <div className="col-span-2 text-white/60 capitalize">
+                    <div className="col-span-2 text-muted-foreground capitalize">
                       {row.allegation_type}
                     </div>
-                    <div className="col-span-2 text-white/60 capitalize">
+                    <div className="col-span-2 text-muted-foreground capitalize">
                       {row.topic.replace(/_/g, " ")}
                     </div>
-                    <div
-                      className="col-span-1 text-center tabular-nums font-semibold"
-                      style={{ color: row.supporting.length ? "#22c55e" : "#ffffff40" }}
-                    >
+                    <div className="col-span-1 text-center tabular-nums text-[#f5f5f5]">
                       {row.supporting.length || "—"}
                     </div>
-                    <div
-                      className="col-span-1 text-center tabular-nums font-semibold"
-                      style={{ color: row.contradicting.length ? "#ef4444" : "#ffffff40" }}
-                    >
+                    <div className="col-span-1 text-center tabular-nums text-[#a3a3a3]">
                       {row.contradicting.length || "—"}
                     </div>
-                    <div
-                      className="col-span-1 text-center font-semibold"
-                      style={{ color: row.gap ? "#f59e0b" : "#ffffff40" }}
-                    >
+                    <div className="col-span-1 text-center text-[#d4d4d4]">
                       {row.gap ? "●" : "—"}
                     </div>
                   </button>
 
                   {open && (
-                    <div className="px-5 py-5 bg-white/[0.03] border-t border-white/10 space-y-5 text-sm">
+                    <div className="px-5 py-5 bg-white/30 border-t border-black/10 space-y-5 text-sm">
                       <div>
-                        <div className="text-xs uppercase tracking-wider text-white/50">
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground">
                           Full claim
                         </div>
-                        <p className="mt-1 text-white">{row.allegation_summary}</p>
-                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-white/70">
-                          <span className="rounded bg-white/10 px-2 py-0.5">
+                        <p className="mt-1 text-black">{row.allegation_summary}</p>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                          <span className="rounded bg-black/10 px-2 py-0.5">
                             {row.allegation_type}
                           </span>
-                          <span className="rounded bg-white/10 px-2 py-0.5 capitalize">
+                          <span className="rounded bg-black/10 px-2 py-0.5 capitalize">
                             {row.topic.replace(/_/g, " ")}
                           </span>
-                          <span className="rounded bg-white/10 px-2 py-0.5">
+                          <span className="rounded bg-black/10 px-2 py-0.5">
                             {row.paragraph_ref}
                           </span>
-                          <span className="rounded bg-white/10 px-2 py-0.5">
-                            confidence {row.confidence}
+                          <span className={confidencePill(row.confidence)}>
+                            {row.confidence}
                           </span>
                         </div>
                       </div>
 
                       {row.supporting.length > 0 && (
                         <div>
-                          <div
-                            className="text-xs uppercase tracking-wider font-semibold"
-                            style={{ color: "#22c55e" }}
-                          >
-                            Supporting ({row.supporting.length})
+                          <div className="text-xs uppercase tracking-wider text-[#f5f5f5]">
+                            Supporting evidence ({row.supporting.length})
                           </div>
                           <div className="mt-2 space-y-2">
                             {row.supporting.map((s, idx) => (
                               <div
                                 key={idx}
-                                className="rounded border p-3"
-                                style={{
-                                  borderColor: "rgba(34,197,94,0.4)",
-                                  background: "rgba(34,197,94,0.07)",
-                                }}
+                                className="rounded border border-[#e5e5e5]/30 bg-[#e5e5e5]/5 p-3"
                               >
                                 <div className="flex items-center justify-between gap-3">
-                                  <div className="font-medium text-white">
-                                    {s.witness}
-                                  </div>
-                                  <div className="flex items-center gap-2 text-[11px] text-white/60">
+                                  <div className="font-medium">{s.witness}</div>
+                                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                                     <span>{s.paragraph}</span>
-                                    <span className="rounded bg-white/10 px-1.5 py-0.5">
+                                    <span className={confidencePill(s.confidence)}>
                                       {s.confidence}
                                     </span>
                                   </div>
                                 </div>
-                                <blockquote className="mt-2 text-white/80 italic border-l-2 pl-3" style={{ borderColor: "#22c55e" }}>
+                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#e5e5e5]/50 pl-3">
                                   "{s.passage}"
                                 </blockquote>
                               </div>
@@ -258,39 +232,30 @@ function MatrixPage() {
 
                       {row.contradicting.length > 0 && (
                         <div>
-                          <div
-                            className="text-xs uppercase tracking-wider font-semibold"
-                            style={{ color: "#ef4444" }}
-                          >
-                            Contradicting ({row.contradicting.length})
+                          <div className="text-xs uppercase tracking-wider text-[#a3a3a3]">
+                            Contradicting evidence ({row.contradicting.length})
                           </div>
                           <div className="mt-2 space-y-2">
                             {row.contradicting.map((c, idx) => (
                               <div
                                 key={idx}
-                                className="rounded border p-3"
-                                style={{
-                                  borderColor: "rgba(239,68,68,0.4)",
-                                  background: "rgba(239,68,68,0.07)",
-                                }}
+                                className="rounded border border-[#525252]/30 bg-[#525252]/5 p-3"
                               >
                                 <div className="flex items-center justify-between gap-3">
-                                  <div className="font-medium text-white">
-                                    {c.witness}
-                                  </div>
-                                  <div className="flex items-center gap-2 text-[11px] text-white/60">
+                                  <div className="font-medium">{c.witness}</div>
+                                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                                     <span>{c.paragraph}</span>
-                                    <span className="rounded bg-white/10 px-1.5 py-0.5">
+                                    <span className={confidencePill(c.confidence)}>
                                       {c.confidence}
                                     </span>
                                   </div>
                                 </div>
-                                <blockquote className="mt-2 text-white/80 italic border-l-2 pl-3" style={{ borderColor: "#ef4444" }}>
+                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#525252]/50 pl-3">
                                   "{c.passage}"
                                 </blockquote>
                                 {c.reasoning && (
-                                  <div className="mt-2 text-xs text-white/70">
-                                    <span style={{ color: "#ef4444" }}>Reasoning:</span>{" "}
+                                  <div className="mt-2 text-xs text-muted-foreground">
+                                    <span className="text-[#a3a3a3]">Reasoning:</span>{" "}
                                     {c.reasoning}
                                   </div>
                                 )}
@@ -301,7 +266,7 @@ function MatrixPage() {
                       )}
 
                       {row.neutral.length > 0 && (
-                        <div className="text-xs text-white/60">
+                        <div className="text-xs text-muted-foreground">
                           <span className="uppercase tracking-wider">Neutral:</span>{" "}
                           {row.neutral.join(", ")}
                           {row.not_addressed > 0 &&
@@ -310,15 +275,9 @@ function MatrixPage() {
                       )}
 
                       {row.gap && (
-                        <div
-                          className="rounded border px-3 py-2 text-xs"
-                          style={{
-                            borderColor: "rgba(245,158,11,0.4)",
-                            background: "rgba(245,158,11,0.10)",
-                            color: "#f59e0b",
-                          }}
-                        >
-                          Evidential gap — no corroboration found across comparison witnesses.
+                        <div className="rounded border border-[#a3a3a3]/40 bg-[#a3a3a3]/10 px-3 py-2 text-xs text-[#d4d4d4]">
+                          ⚠ Evidential gap — no corroboration found across
+                          comparison witnesses.
                         </div>
                       )}
                     </div>
@@ -328,47 +287,6 @@ function MatrixPage() {
             })}
           </div>
         </section>
-
-        {/* Bottom totals */}
-        <section className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div
-            className="rounded-lg border p-5"
-            style={{
-              borderColor: "rgba(245,158,11,0.4)",
-              background: "rgba(245,158,11,0.08)",
-            }}
-          >
-            <div className="text-xs uppercase tracking-wider text-white/60">
-              Evidential gaps
-            </div>
-            <div className="mt-2 text-3xl font-semibold tabular-nums" style={{ color: "#f59e0b" }}>
-              {result.gaps_count}
-            </div>
-          </div>
-          <div
-            className="rounded-lg border p-5"
-            style={{
-              borderColor: "rgba(239,68,68,0.4)",
-              background: "rgba(239,68,68,0.08)",
-            }}
-          >
-            <div className="text-xs uppercase tracking-wider text-white/60">
-              Contradictions
-            </div>
-            <div className="mt-2 text-3xl font-semibold tabular-nums" style={{ color: "#ef4444" }}>
-              {result.contradictions_count}
-            </div>
-          </div>
-        </section>
-
-        <div className="mt-8 flex justify-end">
-          <Link
-            to="/report"
-            className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-[#0f1623] hover:bg-white/90"
-          >
-            View report →
-          </Link>
-        </div>
       </main>
     </div>
   );
