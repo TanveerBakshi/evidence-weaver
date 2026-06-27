@@ -245,7 +245,7 @@ function UploadPage() {
           <Reveal delay={120}>
             <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#e5e5e5]/40">
               <div className="flex items-baseline justify-between">
-                <h3 className="font-marker text-2xl text-[#e5e5e5]">Comparison witnesses</h3>
+                <h3 className="font-display text-2xl tracking-tight text-foreground">Comparison witnesses</h3>
                 <span className="text-xs text-muted-foreground font-type">
                   {comparisons.length} / 4 selected
                 </span>
