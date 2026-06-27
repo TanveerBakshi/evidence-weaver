@@ -70,7 +70,7 @@ export function Cursor() {
           isEvidenceMatrix
             ? {
                 backgroundImage: "none",
-                fontSize: "44px",
+                fontSize: "30px",
                 lineHeight: "1",
                 display: "flex",
                 alignItems: "center",
