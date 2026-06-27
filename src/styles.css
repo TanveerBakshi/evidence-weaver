@@ -96,9 +96,10 @@
   transition: width .2s ease, height .2s ease, filter .2s ease;
   will-change: transform;
 }
-.cursor-hover .cursor-gavel {
-  width: 72px; height: 72px;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.5));
+.cursor-hover .cursor-gavel { display: none; }
+.cursor-hover, .cursor-hover a, .cursor-hover button, .cursor-hover [data-hover],
+.cursor-hover input, .cursor-hover select, .cursor-hover textarea, .cursor-hover label {
+  cursor: pointer;
 }
 
 /* hide on touch */
