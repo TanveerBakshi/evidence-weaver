@@ -16,8 +16,10 @@ export type DocEvidence = {
   passage: string;
   location: string;
   confidence: Confidence;
-  /** PDF URL — Google Drive share link, backend endpoint, etc. */
-  pdf_url?: string;
+  /** PDF URL(s) — Google Drive share link, backend endpoint, etc. Pass an array when an exhibit spans multiple PDFs. */
+  pdf_url?: string | string[];
+  /** Optional labels matched by index to pdf_url when it's an array (e.g. ["Page 1", "Attachment"]). */
+  pdf_labels?: string[];
 };
 
 export type Claim = {
