@@ -33,9 +33,9 @@ function hashRot(s: string, range = 6) {
   return ((h % (range * 2)) - range);
 }
 function readinessTone(r: string) {
-  if (r === "STRONG") return { bg: "#1e4d2b", fg: "#86efac", word: "STRONG" };
-  if (r === "MODERATE") return { bg: "#5a4014", fg: "#fcd34d", word: "MODERATE" };
-  return { bg: "#5a1414", fg: "#fca5a5", word: "VULNERABLE" };
+  if (r === "STRONG") return { bg: "#1e4d2b", fg: "#f5f5f5", word: "STRONG" };
+  if (r === "MODERATE") return { bg: "#5a4014", fg: "#d4d4d4", word: "MODERATE" };
+  return { bg: "#5a1414", fg: "#a3a3a3", word: "VULNERABLE" };
 }
 function noteTone(row: MatrixRow) {
   if (row.contradicting.length > 0) return "postit-red";
@@ -77,7 +77,7 @@ function BoardPage() {
             <button
               onClick={() => navigate({ to: "/" })}
               data-hover
-              className="mt-6 rounded-full bg-[#f59e0b] px-6 py-3 text-sm font-type uppercase tracking-[0.2em] text-black"
+              className="mt-6 rounded-full bg-[#a3a3a3] px-6 py-3 text-sm font-type uppercase tracking-[0.2em] text-black"
             >
               Start analysis
             </button>
@@ -141,7 +141,7 @@ function BoardPage() {
         lines.push({
           x1: primary.x, y1: primary.y + 120,
           x2: x, y2: y - 10,
-          key: `p-${idx}`, color: "#dc2626",
+          key: `p-${idx}`, color: "#404040",
         });
       }
       row.contradicting.forEach((c, ci) => {
@@ -150,7 +150,7 @@ function BoardPage() {
         lines.push({
           x1: w.x, y1: w.y + 120,
           x2: x, y2: y - 10,
-          key: `c-${idx}-${ci}`, color: "#dc2626",
+          key: `c-${idx}-${ci}`, color: "#404040",
         });
       });
     });
@@ -167,7 +167,7 @@ function BoardPage() {
       <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <Link to="/" data-hover className="font-display text-xl tracking-tight hover:text-[#f59e0b]">
+            <Link to="/" data-hover className="font-display text-xl tracking-tight hover:text-[#a3a3a3]">
               ← P/P
             </Link>
             <div>
@@ -198,9 +198,9 @@ function BoardPage() {
         <div className="mx-auto max-w-7xl px-6 pb-3 flex items-center gap-2 text-xs font-type uppercase tracking-[0.2em]">
           {([
             ["all", "All", "#ffffff"],
-            ["contradicting", `Contradictions (${result.contradictions_count})`, "#ef4444"],
-            ["gap", `Gaps (${result.gaps_count})`, "#f59e0b"],
-            ["supporting", "Supported", "#22c55e"],
+            ["contradicting", `Contradictions (${result.contradictions_count})`, "#525252"],
+            ["gap", `Gaps (${result.gaps_count})`, "#a3a3a3"],
+            ["supporting", "Supported", "#e5e5e5"],
           ] as const).map(([k, label, color]) => (
             <button
               key={k}
@@ -329,7 +329,7 @@ function BoardPage() {
             <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> evidential gap</div>
             <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> contradicted</div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/10">
-              <span className="inline-block w-6 h-[2px]" style={{ background: "#dc2626" }} /> red string = contradiction
+              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> red string = contradiction
             </div>
           </div>
         </div>
@@ -377,7 +377,7 @@ function ClaimDetail({ row }: { row: MatrixRow }) {
           <h3 className="font-display text-xl text-[#1e4d2b]">SUPPORTING · {row.supporting.length}</h3>
           <div className="mt-2 space-y-3">
             {row.supporting.map((s, i) => (
-              <div key={i} className="border-l-4 border-[#22c55e] pl-4">
+              <div key={i} className="border-l-4 border-[#e5e5e5] pl-4">
                 <div className="font-marker text-lg text-black">{s.witness}</div>
                 <blockquote className="font-hand text-lg text-black/80 italic">"{s.passage}"</blockquote>
                 <div className="font-type text-[10px] uppercase tracking-[0.2em] text-black/60 mt-1">
@@ -394,7 +394,7 @@ function ClaimDetail({ row }: { row: MatrixRow }) {
           <h3 className="font-display text-xl text-[#7a1212]">CONTRADICTING · {row.contradicting.length}</h3>
           <div className="mt-2 space-y-3">
             {row.contradicting.map((c, i) => (
-              <div key={i} className="border-l-4 border-[#dc2626] pl-4">
+              <div key={i} className="border-l-4 border-[#404040] pl-4">
                 <div className="font-marker text-lg text-black">{c.witness}</div>
                 <blockquote className="font-hand text-lg text-black/80 italic">"{c.passage}"</blockquote>
                 <div className="font-type text-[10px] uppercase tracking-[0.2em] text-black/60 mt-1">

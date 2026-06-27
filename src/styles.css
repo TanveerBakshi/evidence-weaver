@@ -109,7 +109,7 @@
   transition: width .25s ease, height .25s ease, border-color .25s ease;
 }
 .cursor-hover .cursor-dot { width: 0; height: 0; }
-.cursor-hover .cursor-ring { width: 64px; height: 64px; border-color: #f59e0b; }
+.cursor-hover .cursor-ring { width: 64px; height: 64px; border-color: #a3a3a3; }
 
 /* hide on touch */
 @media (hover: none) {
@@ -154,9 +154,9 @@
   padding: 14px 14px 36px;
   box-shadow: 0 14px 26px rgba(0,0,0,.45), 0 3px 6px rgba(0,0,0,.35);
 }
-.postit-yellow { background: #ffe66b; color: #2a2400; }
-.postit-green  { background: #b8f1c0; color: #0a2e12; }
-.postit-red    { background: #ff9a9a; color: #380606; }
+.postit-yellow { background: #ece8dc; color: #2a2400; }
+.postit-green  { background: #f3f1ea; color: #0a2e12; }
+.postit-red    { background: #c9c5b8; color: #380606; }
 .tape {
   position: absolute;
   width: 86px; height: 22px;
@@ -169,8 +169,8 @@
   background: radial-gradient(circle at 35% 30%, #ff6b6b 0 30%, #b81e1e 70%, #6b0e0e 100%);
   box-shadow: 0 3px 4px rgba(0,0,0,.5), inset -2px -2px 4px rgba(0,0,0,.3);
 }
-.pushpin.amber { background: radial-gradient(circle at 35% 30%, #ffd166 0 30%, #d68a00 70%, #6b4400 100%); }
-.pushpin.green { background: radial-gradient(circle at 35% 30%, #7ee08a 0 30%, #1f8a2c 70%, #0b3d12 100%); }
+.pushpin.amber { background: radial-gradient(circle at 35% 30%, #d4d4d4 0 30%, #d68a00 70%, #6b4400 100%); }
+.pushpin.green { background: radial-gradient(circle at 35% 30%, #f5f5f5 0 30%, #1f8a2c 70%, #0b3d12 100%); }
 
 @keyframes pin-wobble {
   0%,100% { transform: rotate(var(--rot, 0deg)); }

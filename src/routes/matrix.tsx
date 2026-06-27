@@ -17,9 +17,9 @@ export const Route = createFileRoute("/matrix")({
 });
 
 function readinessClass(r: string) {
-  if (r === "STRONG") return "bg-[#22c55e]/15 text-[#86efac] border-[#22c55e]/40";
-  if (r === "MODERATE") return "bg-[#f59e0b]/15 text-[#fcd34d] border-[#f59e0b]/40";
-  return "bg-[#ef4444]/15 text-[#fca5a5] border-[#ef4444]/40";
+  if (r === "STRONG") return "bg-[#e5e5e5]/15 text-[#f5f5f5] border-[#e5e5e5]/40";
+  if (r === "MODERATE") return "bg-[#a3a3a3]/15 text-[#d4d4d4] border-[#a3a3a3]/40";
+  return "bg-[#525252]/15 text-[#a3a3a3] border-[#525252]/40";
 }
 
 function confidencePill(c: string) {
@@ -32,10 +32,10 @@ function confidencePill(c: string) {
 
 function rowTone(row: MatrixRow) {
   if (row.contradicting.length > 0)
-    return "bg-[#ef4444]/10 hover:bg-[#ef4444]/15 border-l-2 border-[#ef4444]";
-  if (row.gap) return "bg-[#f59e0b]/10 hover:bg-[#f59e0b]/15 border-l-2 border-[#f59e0b]";
+    return "bg-[#525252]/10 hover:bg-[#525252]/15 border-l-2 border-[#525252]";
+  if (row.gap) return "bg-[#a3a3a3]/10 hover:bg-[#a3a3a3]/15 border-l-2 border-[#a3a3a3]";
   if (row.supporting.length > 0)
-    return "bg-[#22c55e]/10 hover:bg-[#22c55e]/15 border-l-2 border-[#22c55e]";
+    return "bg-[#e5e5e5]/10 hover:bg-[#e5e5e5]/15 border-l-2 border-[#e5e5e5]";
   return "hover:bg-white/5 border-l-2 border-transparent";
 }
 
@@ -167,13 +167,13 @@ function MatrixPage() {
                     <div className="col-span-2 text-muted-foreground capitalize">
                       {row.topic.replace(/_/g, " ")}
                     </div>
-                    <div className="col-span-1 text-center tabular-nums text-[#86efac]">
+                    <div className="col-span-1 text-center tabular-nums text-[#f5f5f5]">
                       {row.supporting.length || "—"}
                     </div>
-                    <div className="col-span-1 text-center tabular-nums text-[#fca5a5]">
+                    <div className="col-span-1 text-center tabular-nums text-[#a3a3a3]">
                       {row.contradicting.length || "—"}
                     </div>
-                    <div className="col-span-1 text-center text-[#fcd34d]">
+                    <div className="col-span-1 text-center text-[#d4d4d4]">
                       {row.gap ? "●" : "—"}
                     </div>
                   </button>
@@ -203,14 +203,14 @@ function MatrixPage() {
 
                       {row.supporting.length > 0 && (
                         <div>
-                          <div className="text-xs uppercase tracking-wider text-[#86efac]">
+                          <div className="text-xs uppercase tracking-wider text-[#f5f5f5]">
                             Supporting evidence ({row.supporting.length})
                           </div>
                           <div className="mt-2 space-y-2">
                             {row.supporting.map((s, idx) => (
                               <div
                                 key={idx}
-                                className="rounded border border-[#22c55e]/30 bg-[#22c55e]/5 p-3"
+                                className="rounded border border-[#e5e5e5]/30 bg-[#e5e5e5]/5 p-3"
                               >
                                 <div className="flex items-center justify-between gap-3">
                                   <div className="font-medium">{s.witness}</div>
@@ -221,7 +221,7 @@ function MatrixPage() {
                                     </span>
                                   </div>
                                 </div>
-                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#22c55e]/50 pl-3">
+                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#e5e5e5]/50 pl-3">
                                   "{s.passage}"
                                 </blockquote>
                               </div>
@@ -232,14 +232,14 @@ function MatrixPage() {
 
                       {row.contradicting.length > 0 && (
                         <div>
-                          <div className="text-xs uppercase tracking-wider text-[#fca5a5]">
+                          <div className="text-xs uppercase tracking-wider text-[#a3a3a3]">
                             Contradicting evidence ({row.contradicting.length})
                           </div>
                           <div className="mt-2 space-y-2">
                             {row.contradicting.map((c, idx) => (
                               <div
                                 key={idx}
-                                className="rounded border border-[#ef4444]/30 bg-[#ef4444]/5 p-3"
+                                className="rounded border border-[#525252]/30 bg-[#525252]/5 p-3"
                               >
                                 <div className="flex items-center justify-between gap-3">
                                   <div className="font-medium">{c.witness}</div>
@@ -250,12 +250,12 @@ function MatrixPage() {
                                     </span>
                                   </div>
                                 </div>
-                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#ef4444]/50 pl-3">
+                                <blockquote className="mt-2 text-muted-foreground italic border-l-2 border-[#525252]/50 pl-3">
                                   "{c.passage}"
                                 </blockquote>
                                 {c.reasoning && (
                                   <div className="mt-2 text-xs text-muted-foreground">
-                                    <span className="text-[#fca5a5]">Reasoning:</span>{" "}
+                                    <span className="text-[#a3a3a3]">Reasoning:</span>{" "}
                                     {c.reasoning}
                                   </div>
                                 )}
@@ -275,7 +275,7 @@ function MatrixPage() {
                       )}
 
                       {row.gap && (
-                        <div className="rounded border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-3 py-2 text-xs text-[#fcd34d]">
+                        <div className="rounded border border-[#a3a3a3]/40 bg-[#a3a3a3]/10 px-3 py-2 text-xs text-[#d4d4d4]">
                           ⚠ Evidential gap — no corroboration found across
                           comparison witnesses.
                         </div>

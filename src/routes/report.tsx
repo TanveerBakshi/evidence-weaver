@@ -94,10 +94,10 @@ function ReportPage() {
               {result.gaps.map((g, i) => (
                 <div
                   key={i}
-                  className="rounded-lg border border-[#f59e0b]/40 bg-[#f59e0b]/10 p-4"
+                  className="rounded-lg border border-[#a3a3a3]/40 bg-[#a3a3a3]/10 p-4"
                 >
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="rounded bg-[#f59e0b]/20 text-[#fcd34d] px-2 py-0.5 uppercase tracking-wider">
+                    <span className="rounded bg-[#a3a3a3]/20 text-[#d4d4d4] px-2 py-0.5 uppercase tracking-wider">
                       {g.topic.replace(/_/g, " ")}
                     </span>
                     <span className="text-muted-foreground">
@@ -135,10 +135,10 @@ function ReportPage() {
               {result.contradictions.map((c, i) => (
                 <div
                   key={i}
-                  className="rounded-lg border border-[#ef4444]/40 bg-[#ef4444]/10 p-5"
+                  className="rounded-lg border border-[#525252]/40 bg-[#525252]/10 p-5"
                 >
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="rounded bg-[#ef4444]/20 text-[#fca5a5] px-2 py-0.5 uppercase tracking-wider">
+                    <span className="rounded bg-[#525252]/20 text-[#a3a3a3] px-2 py-0.5 uppercase tracking-wider">
                       {c.topic.replace(/_/g, " ")}
                     </span>
                   </div>
@@ -149,7 +149,7 @@ function ReportPage() {
                     {c.contradicting.map((x, idx) => (
                       <div
                         key={idx}
-                        className="rounded border border-[#ef4444]/30 bg-black/30 p-3 text-sm"
+                        className="rounded border border-[#525252]/30 bg-black/30 p-3 text-sm"
                       >
                         <div className="flex items-center justify-between gap-3 text-xs">
                           <span className="font-medium text-white">
@@ -159,12 +159,12 @@ function ReportPage() {
                             {x.paragraph} · {x.confidence}
                           </span>
                         </div>
-                        <blockquote className="mt-2 italic text-muted-foreground border-l-2 border-[#ef4444]/50 pl-3">
+                        <blockquote className="mt-2 italic text-muted-foreground border-l-2 border-[#525252]/50 pl-3">
                           "{x.passage}"
                         </blockquote>
                         {x.reasoning && (
                           <div className="mt-2 text-xs text-muted-foreground">
-                            <span className="text-[#fca5a5]">Reasoning:</span>{" "}
+                            <span className="text-[#a3a3a3]">Reasoning:</span>{" "}
                             {x.reasoning}
                           </div>
                         )}

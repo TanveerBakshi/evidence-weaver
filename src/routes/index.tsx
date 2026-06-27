@@ -64,7 +64,7 @@ function HeroScroller() {
         className="mt-10 max-w-xl text-center font-type text-sm md:text-base text-muted-foreground"
       >
         AI cross-examines witness statements, pins the evidence, and shows you
-        exactly where the case is <span className="text-[#fcd34d]">vulnerable</span>.
+        exactly where the case is <span className="text-[#d4d4d4]">vulnerable</span>.
       </motion.p>
 
       <motion.div
@@ -88,7 +88,7 @@ function Marquee() {
       <div className="marquee-track whitespace-nowrap font-display text-5xl md:text-7xl">
         {[...items, ...items].map((t, i) => (
           <span key={i} className="flex items-center gap-12">
-            <span className={i % 3 === 0 ? "text-[#22c55e]" : i % 3 === 1 ? "text-[#ef4444]" : "text-[#f59e0b]"}>
+            <span className={i % 3 === 0 ? "text-[#e5e5e5]" : i % 3 === 1 ? "text-[#525252]" : "text-[#a3a3a3]"}>
               {t}
             </span>
             <span className="text-white/30">✦</span>
@@ -167,7 +167,7 @@ function UploadPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="max-w-xl w-full text-center">
-          <div className="mx-auto h-20 w-20 rounded-full border-2 border-white/15 border-t-[#f59e0b] animate-spin" />
+          <div className="mx-auto h-20 w-20 rounded-full border-2 border-white/15 border-t-[#a3a3a3] animate-spin" />
           <h1 className="mt-8 font-display text-4xl tracking-tight">
             BUILDING THE BOARD
           </h1>
@@ -175,7 +175,7 @@ function UploadPage() {
             Claude is reading {comparisons.length + 1} statements. 2–3 minutes.
           </p>
           <div className="mt-6 inline-flex items-center gap-3 rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm tabular-nums font-type">
-            <span className="h-2 w-2 rounded-full bg-[#f59e0b] animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[#a3a3a3] animate-pulse" />
             Elapsed {mins}:{secs.toString().padStart(2, "0")}
           </div>
         </div>
@@ -191,7 +191,7 @@ function UploadPage() {
       <main className="mx-auto max-w-6xl px-6 py-24">
         <Reveal>
           <div className="mb-16">
-            <div className="font-type text-xs uppercase tracking-[0.3em] text-[#f59e0b]">
+            <div className="font-type text-xs uppercase tracking-[0.3em] text-[#a3a3a3]">
               01 — Select the witnesses
             </div>
             <h2 className="mt-3 font-display text-6xl md:text-8xl leading-[0.9]">
@@ -206,16 +206,16 @@ function UploadPage() {
         </Reveal>
 
         {docError && (
-          <div className="mb-6 rounded-md border border-[#ef4444]/40 bg-[#ef4444]/10 px-4 py-3 text-sm text-[#fecaca] font-type">
+          <div className="mb-6 rounded-md border border-[#525252]/40 bg-[#525252]/10 px-4 py-3 text-sm text-[#d4d4d4] font-type">
             {docError}
           </div>
         )}
 
         <div className="grid gap-8 lg:grid-cols-2">
           <Reveal>
-            <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#f59e0b]/40">
+            <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#a3a3a3]/40">
               <div className="flex items-baseline justify-between">
-                <h3 className="font-marker text-2xl text-[#f59e0b]">Primary witness</h3>
+                <h3 className="font-marker text-2xl text-[#a3a3a3]">Primary witness</h3>
                 <span className="text-xs text-muted-foreground font-type">
                   {docs ? `${docs.length} available` : "Loading…"}
                 </span>
@@ -224,7 +224,7 @@ function UploadPage() {
                 The witness whose claims will be tested against the others.
               </p>
               <select
-                className="mt-4 w-full rounded-md border border-white/15 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f59e0b]"
+                className="mt-4 w-full rounded-md border border-white/15 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#a3a3a3]"
                 value={primary}
                 onChange={(e) => {
                   setPrimary(e.target.value);
@@ -243,9 +243,9 @@ function UploadPage() {
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#22c55e]/40">
+            <div className="rounded-lg border border-white/10 bg-card p-6 transition hover:border-[#e5e5e5]/40">
               <div className="flex items-baseline justify-between">
-                <h3 className="font-marker text-2xl text-[#22c55e]">Comparison witnesses</h3>
+                <h3 className="font-marker text-2xl text-[#e5e5e5]">Comparison witnesses</h3>
                 <span className="text-xs text-muted-foreground font-type">
                   {comparisons.length} / 4 selected
                 </span>
@@ -272,7 +272,7 @@ function UploadPage() {
                     >
                       <input
                         type="checkbox"
-                        className="accent-[#22c55e]"
+                        className="accent-[#e5e5e5]"
                         checked={checked}
                         disabled={disabled}
                         onChange={() => toggleComparison(d)}
@@ -287,7 +287,7 @@ function UploadPage() {
         </div>
 
         {error && (
-          <div className="mt-6 rounded-md border border-[#ef4444]/40 bg-[#ef4444]/10 px-4 py-3 text-sm text-[#fecaca] font-type">
+          <div className="mt-6 rounded-md border border-[#525252]/40 bg-[#525252]/10 px-4 py-3 text-sm text-[#d4d4d4] font-type">
             {error}
           </div>
         )}
@@ -313,7 +313,7 @@ function UploadPage() {
                 onClick={onAnalyse}
                 disabled={!canAnalyse}
                 data-hover
-                className="rounded-full bg-[#f59e0b] px-8 py-4 text-sm font-type uppercase tracking-[0.25em] text-black disabled:opacity-30 hover:bg-[#fbbf24] transition shadow-[0_10px_40px_-10px_rgba(245,158,11,.7)]"
+                className="rounded-full bg-[#a3a3a3] px-8 py-4 text-sm font-type uppercase tracking-[0.25em] text-black disabled:opacity-30 hover:bg-[#f5f5f5] transition shadow-[0_10px_40px_-10px_rgba(245,158,11,.7)]"
               >
                 Build the board →
               </button>
