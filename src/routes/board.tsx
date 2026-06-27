@@ -151,7 +151,7 @@ function BoardPage() {
         lines.push({
           x1: primary.x, y1: primary.y + 120,
           x2: x, y2: y - 10,
-          key: `p-${idx}`, color: "#404040",
+          key: `p-${idx}`, color: "#b91c1c",
         });
       }
       row.contradicting.forEach((c, ci) => {
@@ -160,7 +160,7 @@ function BoardPage() {
         lines.push({
           x1: w.x, y1: w.y + 120,
           x2: x, y2: y - 10,
-          key: `c-${idx}-${ci}`, color: "#404040",
+          key: `c-${idx}-${ci}`, color: "#dc2626",
         });
       });
     });
@@ -244,15 +244,24 @@ function BoardPage() {
               const mx = (s.x1 + s.x2) / 2;
               const my = (s.y1 + s.y2) / 2 + sag;
               return (
-                <path
-                  key={s.key}
-                  d={`M ${s.x1} ${s.y1} Q ${mx} ${my} ${s.x2} ${s.y2}`}
-                  fill="none"
-                  stroke={s.color}
-                  strokeWidth={1.8}
-                  strokeOpacity={0.85}
-                  className="red-string"
-                />
+                <g key={s.key}>
+                  <path
+                    d={`M ${s.x1} ${s.y1} Q ${mx} ${my} ${s.x2} ${s.y2}`}
+                    fill="none"
+                    stroke="#000"
+                    strokeWidth={5}
+                    strokeOpacity={0.35}
+                    className="red-string"
+                  />
+                  <path
+                    d={`M ${s.x1} ${s.y1} Q ${mx} ${my} ${s.x2} ${s.y2}`}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth={3}
+                    strokeOpacity={1}
+                    className="red-string"
+                  />
+                </g>
               );
             })}
           </svg>
@@ -346,7 +355,7 @@ function BoardPage() {
               <span className="pushpin inline-block relative" style={{ position: "relative", top: 0 }} /> White pin = primary · amber = comparison
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> String links a claim to a contradicting witness
+              <span className="inline-block w-6 h-[3px]" style={{ background: "#dc2626" }} /> Red string links a claim to a contradicting witness
             </div>
           </div>
 
