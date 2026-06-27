@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   Mail,
   FileText,
@@ -9,6 +10,9 @@ import {
   Calendar,
   MapPin,
   Hash,
+  X,
+  ExternalLink,
+  FileText as FilePdf,
 } from "lucide-react";
 import { findExhibit, type DocType } from "../lib/evidence-data";
 
@@ -66,7 +70,7 @@ function DocumentPage() {
   const { doc, claim, role } = Route.useLoaderData();
   const Icon = docIcon(doc.doc_type);
   const isSupport = role === "support";
-  const accent = isSupport ? "emerald" : "rose";
+  const [openUrl, setOpenUrl] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -122,7 +126,7 @@ function DocumentPage() {
           <Meta icon={Hash} label="Confidence" value={doc.confidence} />
         </div>
 
-        {/* PDF viewer(s) */}
+        {/* Files (Drive-style grid) */}
         {(() => {
           const urls: string[] = Array.isArray(doc.pdf_url)
             ? doc.pdf_url
@@ -131,38 +135,71 @@ function DocumentPage() {
             : [];
           if (urls.length === 0) return null;
           return (
-            <div className="mt-8 space-y-6">
-              {urls.map((url, i) => {
-                const label =
-                  doc.pdf_labels?.[i] ??
-                  (urls.length > 1 ? `Document ${i + 1} of ${urls.length}` : null);
-                return (
-                  <section
-                    key={url + i}
-                    className="overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm"
-                  >
-                    <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-3">
-                      <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
-                        <Icon className="h-3.5 w-3.5" />
-                        {docHeading(doc.doc_type)} · {doc.date}
-                        {label && <span className="text-slate-400 normal-case tracking-normal font-normal">— {label}</span>}
+            <section className="mt-8">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+                  Files ({urls.length})
+                </h2>
+                <span className="text-[11px] text-slate-400">Click a file to preview</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {urls.map((url, i) => {
+                  const label =
+                    doc.pdf_labels?.[i] ??
+                    `${doc.exhibit}${urls.length > 1 ? `-${i + 1}` : ""}.pdf`;
+                  return (
+                    <button
+                      key={url + i}
+                      type="button"
+                      onClick={() => setOpenUrl(url)}
+                      className="group flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white text-left shadow-sm transition hover:border-slate-400 hover:shadow-md"
+                    >
+                      <div className="flex h-32 items-center justify-center bg-slate-50 border-b border-slate-200 group-hover:bg-slate-100">
+                        <FilePdf
+                          className={`h-12 w-12 ${
+                            isSupport ? "text-emerald-600" : "text-rose-600"
+                          }`}
+                          strokeWidth={1.25}
+                        />
                       </div>
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-700"
-                      >
-                        Open in new tab
-                      </a>
-                    </div>
-                    <iframe
-                      src={toEmbedUrl(url)}
-                      title={`Exhibit ${doc.exhibit}${label ? ` — ${label}` : ""}`}
-                      className="block w-full bg-slate-100"
-                      style={{ height: "80vh", border: 0 }}
-                    />
-                  </section>
+                      <div className="flex items-start gap-2 px-3 py-2.5">
+                        <FilePdf className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+                        <span className="text-xs font-medium text-slate-800 line-clamp-2 break-all">
+                          {label}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* Extracted passage */}
+        <section className="mt-8 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+            Extracted passage
+          </div>
+          <div className="px-8 py-8">
+            <p className="text-xs uppercase tracking-wider text-slate-400 mb-2">
+              {doc.location}
+            </p>
+            <blockquote
+              className={`border-l-4 pl-5 text-xl leading-relaxed text-slate-900 ${
+                isSupport ? "border-emerald-500" : "border-rose-500"
+              }`}
+              style={{ fontFamily: "Fraunces, serif" }}
+            >
+              "{doc.passage}"
+            </blockquote>
+            {!doc.pdf_url && (
+              <div className="mt-8 text-[11px] text-slate-400 italic">
+                [No source PDF linked yet for exhibit {doc.exhibit}.]
+              </div>
+            )}
+          </div>
+        </section>
                 );
               })}
             </div>
