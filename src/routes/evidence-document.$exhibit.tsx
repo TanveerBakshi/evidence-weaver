@@ -236,6 +236,52 @@ function DocumentPage() {
           </Link>
         </section>
       </main>
+
+      {/* PDF preview modal */}
+      {openUrl && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-sm"
+          onClick={() => setOpenUrl(null)}
+        >
+          <div className="flex items-center justify-between gap-3 px-4 py-3 text-white">
+            <div className="flex items-center gap-2 text-xs font-medium truncate">
+              <FilePdf className="h-4 w-4 shrink-0" />
+              <span className="truncate">Exhibit {doc.exhibit}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={openUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 rounded-md bg-white/10 px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/20"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open in new tab
+              </a>
+              <button
+                type="button"
+                onClick={() => setOpenUrl(null)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-white hover:bg-white/20"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          <div
+            className="flex-1 px-4 pb-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={toEmbedUrl(openUrl)}
+              title="PDF preview"
+              className="h-full w-full rounded-lg bg-white"
+              style={{ border: 0 }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
