@@ -93,16 +93,26 @@ function BoardPage() {
     [result],
   );
 
-  // Lay out witness polaroids in a top row, and claim notes in a grid below
+  // Primary witness centered at top, comparisons in a row below
   const witnessSlots = useMemo(() => {
-    const n = allWitnesses.length;
     const w = Math.max(boardSize.w, 1200);
-    return allWitnesses.map((name, i) => {
-      const x = (w / (n + 1)) * (i + 1);
-      const y = 140;
-      return { name, x, y, rot: hashRot(name + i, 5) };
+    const slots: Array<{ name: string; x: number; y: number; rot: number; isPrimary: boolean }> = [];
+    slots.push({
+      name: result.primary_witness,
+      x: w / 2,
+      y: 110,
+      rot: hashRot(result.primary_witness, 3),
+      isPrimary: true,
     });
-  }, [allWitnesses, boardSize]);
+    const comps = result.comparison_witnesses;
+    const n = comps.length;
+    comps.forEach((name, i) => {
+      const x = n === 1 ? w / 2 : (w / (n + 1)) * (i + 1);
+      slots.push({ name, x, y: 430, rot: hashRot(name + i, 5), isPrimary: false });
+    });
+    return slots;
+  }, [result, boardSize]);
+
 
   // Build claim cards
   const visibleRows = useMemo(() => {
@@ -120,7 +130,7 @@ function BoardPage() {
   const noteSlots = useMemo(() => {
     const cols = boardSize.w > 1600 ? 5 : boardSize.w > 1200 ? 4 : 3;
     const colW = Math.max(boardSize.w, 1200) / cols;
-    const startY = 460;
+    const startY = 720;
     return visibleRows.map(({ row, idx }, i) => {
       const col = i % cols;
       const rowI = Math.floor(i / cols);
@@ -159,7 +169,7 @@ function BoardPage() {
 
   const tone = readinessTone(result.trial_readiness);
   const boardW = Math.max(boardSize.w, 1200);
-  const boardH = Math.max(600, 460 + Math.ceil(noteSlots.length / (boardSize.w > 1600 ? 5 : boardSize.w > 1200 ? 4 : 3)) * 260 + 120);
+  const boardH = Math.max(900, 720 + Math.ceil(noteSlots.length / (boardSize.w > 1600 ? 5 : boardSize.w > 1200 ? 4 : 3)) * 260 + 120);
 
   return (
     <div className="min-h-screen">
@@ -253,33 +263,36 @@ function BoardPage() {
           </div>
 
           {/* Witness polaroids */}
-          {witnessSlots.map((w, i) => {
-            const isPrimary = w.name === result.primary_witness;
+          {witnessSlots.map((w) => {
+            const isPrimary = w.isPrimary;
+            const size = isPrimary ? 280 : 200;
             return (
               <div
                 key={w.name}
                 className="absolute polaroid wobble"
                 style={{
-                  left: w.x - 110,
+                  left: w.x - size / 2,
                   top: w.y,
-                  width: 220,
+                  width: size,
                   ["--rot" as any]: `${w.rot}deg`,
                   transform: `rotate(${w.rot}deg)`,
+                  zIndex: isPrimary ? 5 : 3,
                 }}
               >
                 <div className={`pushpin absolute -top-2 left-1/2 -translate-x-1/2 ${isPrimary ? "" : "amber"}`} />
                 <div
-                  className="aspect-square w-full flex items-center justify-center font-display text-6xl"
+                  className="aspect-square w-full flex items-center justify-center font-display"
                   style={{
                     background: `linear-gradient(135deg, #2a2a2a, #4a4a4a)`,
                     color: "#ddd",
                     filter: "grayscale(0.4) contrast(1.05)",
+                    fontSize: isPrimary ? "5rem" : "3.5rem",
                   }}
                 >
                   {initialsOf(w.name)}
                 </div>
                 <div className="mt-3 text-center">
-                  <div className="font-marker text-lg leading-tight">{w.name}</div>
+                  <div className={`font-marker leading-tight ${isPrimary ? "text-2xl" : "text-base"}`}>{w.name}</div>
                   <div className="font-type text-[10px] uppercase tracking-[0.2em] text-neutral-600 mt-1">
                     {isPrimary ? "Primary witness" : "Comparison"}
                   </div>
@@ -287,6 +300,7 @@ function BoardPage() {
               </div>
             );
           })}
+
 
           {/* Claim notes */}
           {noteSlots.map(({ row, idx, x, y, rot }) => {
@@ -325,13 +339,17 @@ function BoardPage() {
           {/* Legend */}
           <div className="absolute right-6 top-6 paper px-4 py-3 rotate-[2deg] font-type text-xs">
             <div className="font-marker text-base mb-2">LEGEND</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-green" /> supported</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> evidential gap</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> contradicted</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-green" /> Supported by other witnesses</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-yellow" /> Evidential gap — no corroboration</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-3 h-3 inline-block postit-red" /> Contradicted by other witnesses</div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/10">
-              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> red string = contradiction
+              <span className="pushpin inline-block relative" style={{ position: "relative", top: 0 }} /> White pin = primary · amber = comparison
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="inline-block w-6 h-[2px]" style={{ background: "#404040" }} /> String links a claim to a contradicting witness
             </div>
           </div>
+
         </div>
       </div>
 
