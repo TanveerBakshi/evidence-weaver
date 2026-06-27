@@ -52,6 +52,16 @@ const docHeading = (t: DocType) =>
     ? "Invoice"
     : "Meeting minutes";
 
+/** Convert a Google Drive share URL into an embeddable preview URL. */
+function toEmbedUrl(url: string) {
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  const openMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
+  return url;
+}
+
+
 function DocumentPage() {
   const { doc, claim, role } = Route.useLoaderData();
   const Icon = docIcon(doc.doc_type);
