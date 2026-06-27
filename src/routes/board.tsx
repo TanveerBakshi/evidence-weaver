@@ -93,16 +93,26 @@ function BoardPage() {
     [result],
   );
 
-  // Lay out witness polaroids in a top row, and claim notes in a grid below
+  // Primary witness centered at top, comparisons in a row below
   const witnessSlots = useMemo(() => {
-    const n = allWitnesses.length;
     const w = Math.max(boardSize.w, 1200);
-    return allWitnesses.map((name, i) => {
-      const x = (w / (n + 1)) * (i + 1);
-      const y = 140;
-      return { name, x, y, rot: hashRot(name + i, 5) };
+    const slots: Array<{ name: string; x: number; y: number; rot: number; isPrimary: boolean }> = [];
+    slots.push({
+      name: result.primary_witness,
+      x: w / 2,
+      y: 110,
+      rot: hashRot(result.primary_witness, 3),
+      isPrimary: true,
     });
-  }, [allWitnesses, boardSize]);
+    const comps = result.comparison_witnesses;
+    const n = comps.length;
+    comps.forEach((name, i) => {
+      const x = n === 1 ? w / 2 : (w / (n + 1)) * (i + 1);
+      slots.push({ name, x, y: 430, rot: hashRot(name + i, 5), isPrimary: false });
+    });
+    return slots;
+  }, [result, boardSize]);
+
 
   // Build claim cards
   const visibleRows = useMemo(() => {
