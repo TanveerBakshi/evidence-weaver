@@ -10,6 +10,7 @@ import {
   FileSearch,
   Scale,
   Info,
+  ArrowUpRight,
 } from "lucide-react";
 
 export const Route = createFileRoute("/evidence-matrix")({
