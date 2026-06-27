@@ -123,7 +123,7 @@
 .font-type    { font-family: var(--font-mono-type); }
 
 .text-stroke {
-  -webkit-text-stroke: 1px rgba(255,255,255,.85);
+  -webkit-text-stroke: 1px rgba(0,0,0,.85);
   color: transparent;
 }
 
