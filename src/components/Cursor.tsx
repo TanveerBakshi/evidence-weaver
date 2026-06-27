@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gavelUrl from "../assets/magnifier-cursor.png";
+import pointerUrl from "../assets/pointer-cursor.png";
 
 export function Cursor() {
   const gavel = useRef<HTMLDivElement>(null);
@@ -30,12 +31,16 @@ export function Cursor() {
       }
     };
     let raf = 0;
+    const pointer = document.getElementById("cursor-pointer");
     const loop = () => {
       pos.current.rx += (pos.current.x - pos.current.rx) * 0.28;
       pos.current.ry += (pos.current.y - pos.current.ry) * 0.28;
       pos.current.rot += (pos.current.tRot - pos.current.rot) * 0.2;
       if (gavel.current) {
         gavel.current.style.transform = `translate(${pos.current.rx}px, ${pos.current.ry}px) translate(-60%,-35%) rotate(${pos.current.rot}deg)`;
+      }
+      if (pointer) {
+        pointer.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
       }
       raf = requestAnimationFrame(loop);
     };
@@ -54,10 +59,17 @@ export function Cursor() {
   }, []);
 
   return (
-    <div
-      ref={gavel}
-      className="cursor-gavel"
-      style={{ backgroundImage: `url(${gavelUrl})` }}
-    />
+    <>
+      <div
+        ref={gavel}
+        className="cursor-gavel"
+        style={{ backgroundImage: `url(${gavelUrl})` }}
+      />
+      <div
+        id="cursor-pointer"
+        className="cursor-pointer-img"
+        style={{ backgroundImage: `url(${pointerUrl})` }}
+      />
+    </>
   );
 }
