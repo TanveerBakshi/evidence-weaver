@@ -200,36 +200,6 @@ function DocumentPage() {
             )}
           </div>
         </section>
-                );
-              })}
-            </div>
-          );
-        })()}
-
-        {/* Extracted passage */}
-        <section className="mt-8 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
-          <div className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
-            Extracted passage
-          </div>
-          <div className="px-8 py-8">
-            <p className="text-xs uppercase tracking-wider text-slate-400 mb-2">
-              {doc.location}
-            </p>
-            <blockquote
-              className={`border-l-4 pl-5 text-xl leading-relaxed text-slate-900 ${
-                isSupport ? "border-emerald-500" : "border-rose-500"
-              }`}
-              style={{ fontFamily: "Fraunces, serif" }}
-            >
-              "{doc.passage}"
-            </blockquote>
-            {!doc.pdf_url && (
-              <div className="mt-8 text-[11px] text-slate-400 italic">
-                [No source PDF linked yet for exhibit {doc.exhibit}.]
-              </div>
-            )}
-          </div>
-        </section>
 
 
         {/* Linked claim */}
