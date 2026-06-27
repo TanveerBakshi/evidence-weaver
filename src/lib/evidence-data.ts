@@ -16,6 +16,8 @@ export type DocEvidence = {
   passage: string;
   location: string;
   confidence: Confidence;
+  /** PDF URL — Google Drive share link, backend endpoint, etc. */
+  pdf_url?: string;
 };
 
 export type Claim = {
@@ -79,6 +81,8 @@ export const EVIDENCE_DATA: EvidenceData = {
           passage: "Happy to proceed at £50,000 as discussed.",
           location: "body",
           confidence: "HIGH",
+          // TODO: replace with the real Google Drive share URL or backend endpoint for this exhibit
+          pdf_url: "https://www.africau.edu/images/default/sample.pdf",
         },
       ],
       documents_contradicting: [],
@@ -112,6 +116,8 @@ export const EVIDENCE_DATA: EvidenceData = {
           passage: "Delivery date to be agreed in writing.",
           location: "clause 5.2",
           confidence: "HIGH",
+          // TODO: replace with the real Google Drive share URL or backend endpoint for this exhibit
+          pdf_url: "https://www.africau.edu/images/default/sample.pdf",
         },
       ],
     },

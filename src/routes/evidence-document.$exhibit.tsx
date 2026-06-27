@@ -52,6 +52,16 @@ const docHeading = (t: DocType) =>
     ? "Invoice"
     : "Meeting minutes";
 
+/** Convert a Google Drive share URL into an embeddable preview URL. */
+function toEmbedUrl(url: string) {
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  const openMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
+  return url;
+}
+
+
 function DocumentPage() {
   const { doc, claim, role } = Route.useLoaderData();
   const Icon = docIcon(doc.doc_type);
@@ -112,26 +122,38 @@ function DocumentPage() {
           <Meta icon={Hash} label="Confidence" value={doc.confidence} />
         </div>
 
-        {/* Document mock-up */}
+        {/* PDF viewer */}
+        {doc.pdf_url && (
+          <section className="mt-8 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-3">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+                <Icon className="h-3.5 w-3.5" />
+                {docHeading(doc.doc_type)} · {doc.date}
+              </div>
+              <a
+                href={doc.pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-700"
+              >
+                Open in new tab
+              </a>
+            </div>
+            <iframe
+              src={toEmbedUrl(doc.pdf_url)}
+              title={`Exhibit ${doc.exhibit}`}
+              className="block w-full bg-slate-100"
+              style={{ height: "80vh", border: 0 }}
+            />
+          </section>
+        )}
+
+        {/* Extracted passage */}
         <section className="mt-8 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
-          <div className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-[11px] uppercase tracking-wider text-slate-500 font-semibold flex items-center gap-2">
-            <Icon className="h-3.5 w-3.5" />
-            {docHeading(doc.doc_type)} · {doc.date}
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+            Extracted passage
           </div>
-          <div className="px-8 py-10">
-            {doc.doc_type === "email" && (
-              <div className="space-y-1 text-sm text-slate-700 border-b border-slate-100 pb-4 mb-6">
-                <div><span className="text-slate-400">From:</span> counsel@example.com</div>
-                <div><span className="text-slate-400">To:</span> {claim.witness_a.toLowerCase().replace(/\s+/g, ".")}@example.com</div>
-                <div><span className="text-slate-400">Date:</span> {doc.date}</div>
-                <div><span className="text-slate-400">Subject:</span> Re: {claim.allegation_summary}</div>
-              </div>
-            )}
-            {doc.doc_type === "contract" && (
-              <div className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-slate-500">
-                Agreement — {doc.date}
-              </div>
-            )}
+          <div className="px-8 py-8">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-2">
               {doc.location}
             </p>
@@ -143,11 +165,14 @@ function DocumentPage() {
             >
               "{doc.passage}"
             </blockquote>
-            <div className="mt-10 text-[11px] text-slate-400 italic">
-              [Excerpt only. Full document held in case bundle under reference {doc.exhibit}.]
-            </div>
+            {!doc.pdf_url && (
+              <div className="mt-8 text-[11px] text-slate-400 italic">
+                [No source PDF linked yet for exhibit {doc.exhibit}.]
+              </div>
+            )}
           </div>
         </section>
+
 
         {/* Linked claim */}
         <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6">
