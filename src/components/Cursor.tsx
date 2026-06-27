@@ -35,7 +35,7 @@ export function Cursor() {
       pos.current.ry += (pos.current.y - pos.current.ry) * 0.28;
       pos.current.rot += (pos.current.tRot - pos.current.rot) * 0.2;
       if (gavel.current) {
-        gavel.current.style.transform = `translate(${pos.current.rx}px, ${pos.current.ry}px) translate(-20%,-80%) rotate(${pos.current.rot}deg)`;
+        gavel.current.style.transform = `translate(${pos.current.rx}px, ${pos.current.ry}px) translate(-60%,-35%) rotate(${pos.current.rot}deg)`;
       }
       raf = requestAnimationFrame(loop);
     };
