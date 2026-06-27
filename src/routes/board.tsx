@@ -77,7 +77,7 @@ function BoardPage() {
             <button
               onClick={() => navigate({ to: "/" })}
               data-hover
-              className="mt-6 rounded-full bg-[#a3a3a3] px-6 py-3 text-sm font-type uppercase tracking-[0.2em] text-black"
+              className="mt-6 rounded-full bg-[#dc2626] px-6 py-3 text-sm font-type uppercase tracking-[0.2em] text-black hover:bg-[#ef4444] transition"
             >
               Start analysis
             </button>
