@@ -1,7 +1,7 @@
 import type { AnalysisResult } from "./analysis-store";
 import { transformPleadingResult } from "./transform";
 
-const BASE = import.meta.env.VITE_API_URL || "https://cmsxharvey-production.up.railway.app";
+const BASE = import.meta.env.VITE_API_URL || "https://cmsxharvey.onrender.com";
 
 export async function fetchDocuments(): Promise<{ documents: { filename: string; witness_name: string }[]; count: number }> {
   const r = await fetch(`${BASE}/documents`);
