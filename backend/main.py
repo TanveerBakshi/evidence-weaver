@@ -331,6 +331,21 @@ def precompute_demo(background_tasks: BackgroundTasks):
     )
     return {"job_id": job_id, "status": "queued", "message": "Pre-computing demo result..."}
 
+@app.delete("/demo/cache")
+def clear_demo_cache():
+    """Clear the cached demo result so it can be recomputed fresh."""
+    global _demo_result
+    _demo_result = None
+    try:
+        from services.storage import DEMO_FILE
+        import os
+        if os.path.exists(DEMO_FILE):
+            os.remove(DEMO_FILE)
+            return {"status": "cleared", "message": "Demo cache deleted from disk"}
+        return {"status": "cleared", "message": "No cache file found"}
+    except Exception as e:
+        return {"status": "cleared", "message": str(e)}
+
 def run_demo_precompute(job_id: str):
     global _demo_result
     try:
