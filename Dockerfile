@@ -6,8 +6,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./backend/
+COPY storage/ ./storage/
 
-RUN mkdir -p data/raw storage
+RUN mkdir -p data/raw
 
 ENV PYTHONPATH=/app
 ENV PORT=8080
