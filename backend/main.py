@@ -74,6 +74,9 @@ def list_documents():
         return _documents_cache
 
     data_dir = "data/raw"
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir, exist_ok=True)
+        return {"documents": [], "count": 0, "message": "No documents uploaded yet. Use POST /upload to add witness statements."}
     files = sorted([f for f in os.listdir(data_dir) if f.lower().endswith(".pdf")])
 
     structured = []
