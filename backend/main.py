@@ -307,15 +307,25 @@ def get_graph():
 def get_demo():
     """
     Returns pre-computed analysis result instantly.
-    Use this for presentations — no waiting for Claude API.
+    Checks memory first, then falls back to disk.
     """
     global _demo_result
-    if _demo_result is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Demo not pre-computed yet. POST to /demo/precompute first."
-        )
-    return _demo_result
+
+    # Check memory
+    if _demo_result is not None:
+        return _demo_result
+
+    # Fall back to disk
+    from services.storage import load_demo
+    result = load_demo()
+    if result is not None:
+        _demo_result = result  # cache in memory
+        return result
+
+    raise HTTPException(
+        status_code=404,
+        detail="Demo not pre-computed yet. POST to /demo/precompute first."
+    )
 
 @app.post("/demo/precompute")
 def precompute_demo(background_tasks: BackgroundTasks):
